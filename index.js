@@ -60,12 +60,34 @@ async function run() {
             const result = await AssignmentsCollection.deleteOne(query)
             res.send(result)
         })
-        // update the specific assignment one user created
+        // getting the all assignment  users created
 
         app.get('/createdAssignments/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await AssignmentsCollection.findOne(query)
+            res.send(result)
+        })
+
+        // users can update on hitting this api
+
+        app.put('/createdAssignments/:id',async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updatedAssignment = req.body
+            const assignment = {
+                $set: {
+                    title: updatedAssignment.title,
+                    description: updatedAssignment.description,
+                    thumbnail: updatedAssignment.thumbnail,
+                    fullMarks: updatedAssignment.fullMarks,
+                    level: updatedAssignment.level,
+                    date: updatedAssignment.date
+                }
+            }
+
+            const result = await AssignmentsCollection.updateOne(filter, assignment, options)
             res.send(result)
         })
         // Send a ping to confirm a successful connection
