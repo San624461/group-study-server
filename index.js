@@ -35,7 +35,7 @@ async function run() {
 
 
         const AssignmentsCollection = client.db('assignmentsDb').collection('assignment')
-
+const submittedCollections = client.db('submittedAssignments').collection('submitted')
         // created assignmentd by users
         app.post('/createdAssignments', async (req, res) => {
             const newAssignment = req.body
@@ -88,6 +88,21 @@ async function run() {
             }
 
             const result = await AssignmentsCollection.updateOne(filter, assignment, options)
+            res.send(result)
+        })
+
+        // submission posting 
+        app.post('/submittedAssignments', async (req, res) => {
+            const submittedAssignment = req.body
+
+            const result = await submittedCollections.insertOne(submittedAssignment)
+            res.send(result)
+        })
+
+        //getting the submitted assignments
+        app.get('/submittedAssignments', async(req,res)=>{
+            const cursor = await submittedCollections.find();
+            const result = await cursor.toArray();
             res.send(result)
         })
         // Send a ping to confirm a successful connection
