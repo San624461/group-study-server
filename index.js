@@ -105,6 +105,35 @@ const submittedCollections = client.db('submittedAssignments').collection('submi
             const result = await cursor.toArray();
             res.send(result)
         })
+
+        // individual submitted assignment page 
+        app.get('/submittedAssignments/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await submittedCollections.findOne(query)
+            res.send(result)
+        })
+
+        //updating marks and feedback
+
+        app.put('/submittedAssignments/:id',async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updatedAssignment = req.body
+            const assignment = {
+                $set: {
+                
+                    status : updatedAssignment.status,
+                    marks: updatedAssignment.marks,
+                    marks: updatedAssignment.marks,
+                    feedback: updatedAssignment.feedback
+                }
+            }
+
+            const result = await submittedCollections.updateOne(filter, assignment, options)
+            res.send(result)
+        })
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
